@@ -9,24 +9,24 @@ get_perfum <- function(url){
   
   page <- read_html(url)
   
-  `ÉÌÒµÏãË®top200` <- tibble(
-    # ×¥È¡ÏãË®Ãû³Æ
+  `å•†ä¸šé¦™æ°´top200` <- tibble(
+    # æŠ“å–é¦™æ°´åç§°
     row1 = page %>%
       html_nodes("div.trade-article div.trade-content-article h2 a") %>% 
       html_text(),
     
-    # ×¥È¡ÏãË®ÆÀ·Ö
+    # æŠ“å–é¦™æ°´è¯„åˆ†
     row2 = page%>%
       html_nodes("div.score span.tiaoz") %>% 
       html_text(),
     
-    #×¥È¡ÏãË®ÏêÇéÍøÖ·
+    #æŠ“å–é¦™æ°´è¯¦æƒ…ç½‘å€
     row3 = page %>% 
       html_nodes("div.trade-article div.trade-content-article h2 a") %>% 
       html_attr("href") %>% 
       paste0("https://www.nosetime.com", .),
     
-    #×¥È¡ÏãË®¾ßÌåÏ¸½Ú
+    #æŠ“å–é¦™æ°´å…·ä½“ç»†èŠ‚
     row4 = page %>% 
       html_nodes("div.intro") %>% 
       html_text() %>%  
@@ -53,26 +53,26 @@ perfums$row1[11] = paste0(perfums$row1[11], ", 1970")
 perfums$row1[19] = paste0(perfums$row1[19], ", 2007")
 perfums$row1[171] = paste0(perfums$row1[171], ", 2006")
 perfums$row1[195] = paste0(perfums$row1[195], ", 1960")
-perfums$row1[46] = paste0("°®ÂíÊË ", perfums$row1[46])
-perfums$row1[53] = paste0("°®ÂíÊË ", perfums$row1[53])
+perfums$row1[46] = paste0("çˆ±é©¬ä»• ", perfums$row1[46])
+perfums$row1[53] = paste0("çˆ±é©¬ä»• ", perfums$row1[53])
 
 aa <- tibble(
   
-  `Ãû³Æ` = perfums$row1,
+  `åç§°` = perfums$row1,
 
-  `Æ·ÅÆ` = perfums$row1 %>% 
+  `å“ç‰Œ` = perfums$row1 %>% 
     regexpr(" ", .) %>% 
     map(1) %>%  
     substr(map(perfums$row1, 1), 1, .),
   
-  `ÆÀ·Ö` = perfums$row2 %>%
-    regexpr("·Ö", .) %>% 
+  `è¯„åˆ†` = perfums$row2 %>%
+    regexpr("åˆ†", .) %>% 
     map(., ~. - 1) %>% 
     substr(perfums$row2, 1, .) %>% 
     map(1) %>% 
     as.numeric(),
   
-  `Äê·Ý` = perfums$row1 %>% 
+  `å¹´ä»½` = perfums$row1 %>% 
     regexpr(",", .) %>% 
     map(1) %>%
     substring(map(perfums$row1, 1), .) %>% 
@@ -80,14 +80,14 @@ aa <- tibble(
     map(1) %>% 
     as.numeric(),
   
-  `ÊôÐÔ` = perfums$row4 %>% 
-    regexpr("ÊôÐÔ£º", .) %>% 
+  `å±žæ€§` = perfums$row4 %>% 
+    regexpr("å±žæ€§ï¼š", .) %>% 
     map(1) %>% 
     map(~. + 3) %>% 
     substr(map(perfums$row4, 1), ., map(., ~. + 2)),
   
-  `Ïãµ÷` = perfums$row4 %>% 
-    regexpr(" Ïãµ÷£º", .) %>% 
+  `é¦™è°ƒ` = perfums$row4 %>% 
+    regexpr(" é¦™è°ƒï¼š", .) %>% 
     map(1) %>% 
     map(~. + 4)%>%
     substring(map(perfums$row4, 1), ., last = 100000L)
@@ -96,23 +96,24 @@ aa <- tibble(
 
 aa
 View(aa)
+write.csv(x = aa, file = "D://Hello//R//R//perfum.csv", row.names = FALSE)
 ########################################
 
 y = c(
-  nrow(filter(aa, `ÊôÐÔ` == "ÄÐÏã ")),
-  nrow(filter(aa, `ÊôÐÔ` == "Å®Ïã ")),
-  nrow(filter(aa, `ÊôÐÔ` == "ÖÐÐÔÏã"))
+  nrow(filter(aa, `å±žæ€§` == "ç”·é¦™ ")),
+  nrow(filter(aa, `å±žæ€§` == "å¥³é¦™ ")),
+  nrow(filter(aa, `å±žæ€§` == "ä¸­æ€§é¦™"))
   )
-labels = c("ÄÐÏã", "Å®Ïã", "ÖÐÐÔÏã")
+labels = c("ç”·é¦™", "å¥³é¦™", "ä¸­æ€§é¦™")
 pie(y, labels, col=rainbow(3), radius = 0.9)
 
 #########################################
-mytable <- table(aa$`Æ·ÅÆ`)
+mytable <- table(aa$`å“ç‰Œ`)
 mytable
 df <- as.data.frame(mytable) %>% 
   arrange(-Freq)
 
-mytable1 <- table(aa$Äê·Ý) %>% 
+mytable1 <- table(aa$å¹´ä»½) %>% 
   as.data.frame() %>% 
   arrange(-Freq)
 
@@ -128,26 +129,26 @@ p = df %>%
   
 ####################################################### 
 aa %>%
-  filter(`ÊôÐÔ` == "ÄÐÏã ") %>% 
-  ggplot(aes(x = `Äê·Ý`, y = `ÆÀ·Ö`))+
+  filter(`å±žæ€§` == "ç”·é¦™ ") %>% 
+  ggplot(aes(x = `å¹´ä»½`, y = `è¯„åˆ†`))+
   geom_point(size = 3)
 
 aa %>%
-  filter(`ÊôÐÔ` == "Å®Ïã ") %>% 
-  ggplot(aes(x = `Äê·Ý`, y = `ÆÀ·Ö`))+
+  filter(`å±žæ€§` == "å¥³é¦™ ") %>% 
+  ggplot(aes(x = `å¹´ä»½`, y = `è¯„åˆ†`))+
   geom_point(size = 3)
 
 aa %>%
-  filter(`ÊôÐÔ` == "ÖÐÐÔÏã") %>% 
-  ggplot(aes(x = `Äê·Ý`, y = `ÆÀ·Ö`))+
+  filter(`å±žæ€§` == "ä¸­æ€§é¦™") %>% 
+  ggplot(aes(x = `å¹´ä»½`, y = `è¯„åˆ†`))+
   geom_point(size = 3)
 
 aa %>% 
-  ggplot(aes(x = `Äê·Ý`, y = `ÆÀ·Ö`))+
+  ggplot(aes(x = `å¹´ä»½`, y = `è¯„åˆ†`))+
   geom_point(size = 3)
 
 
-View(arrange(aa, aa$Äê·Ý))
+View(arrange(aa, aa$å¹´ä»½))
 ############################################################
 
 getdetail <- function(url){
@@ -155,7 +156,7 @@ getdetail <- function(url){
   page <- read_html(url)
   
   tibble(
-    `ÎåÐÇ` = page %>% 
+    `äº”æ˜Ÿ` = page %>% 
       html_nodes("ul.item_score div.nows:nth-child(1)") %>% 
       html_text()
   )
@@ -169,10 +170,10 @@ jobdetail <- perfums$row3 %>%
 b = jobdetail %>% 
   map_df("result") 
 
-e = b$ÎåÐÇ %>% 
+e = b$äº”æ˜Ÿ %>% 
   regexpr("%", .) %>% 
   map(., ~. - 1) %>% 
-  substr(b$ÎåÐÇ, 1, .) %>% 
+  substr(b$äº”æ˜Ÿ, 1, .) %>% 
   as.numeric() %>% 
   map(., ~. * 0.01)
 
@@ -197,9 +198,9 @@ for(i in 1:200){
 ##############################################################################
 
 ss <- tibble(
-  `Ãû³Æ` = aa$Ãû³Æ,
-  `ÆÀ·Ö` = aa$ÆÀ·Ö,
-  aa$Ïãµ÷,
+  `åç§°` = aa$åç§°,
+  `è¯„åˆ†` = aa$è¯„åˆ†,
+  aa$é¦™è°ƒ,
   mys,
   mystar_std
 )
